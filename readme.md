@@ -125,3 +125,26 @@ Configure your AI client (Cursor, Claude, Copilot, etc.) with following settings
 | `APISIX_ADMIN_KEY`        | Admin API authentication key                | `edd1c9f034335f136f87ad84b625c8f1` |
 
 To view or modify Admin API configurations in APISIX, refer to the [Admin API](https://apisix.apache.org/docs/apisix/admin-api) documentation.
+
+
+## Resources 
+
+### Open MCP Marketplace API Support 
+![MCP Marketplace User Review Rating Badge](http://www.deepnlp.org/api/marketplace/svg?api7/apisix-mcp)|[GitHub](https://github.com/AI-Agent-Hub/mcp-marketplace)|[Doc](http://www.deepnlp.org/doc/mcp_marketplace)|[MCP Marketplace](http://www.deepnlp.org/store/ai-agent/mcp-server)
+- Allow AI App/Agent/LLM to find this MCP Server via common python/typescript API, search and explore relevant servers and tools
+
+***Example: Search Server and Tools***
+```python
+    import anthropic
+    import mcp_marketplace as mcpm
+
+    result_q = mcpm.search(query="apisix mcp", mode="list", page_id=0, count_per_page=100, config_name="deepnlp") # search server by category choose various endpoint
+    result_id = mcpm.search(id="api7/apisix-mcp", mode="list", page_id=0, count_per_page=100, config_name="deepnlp")      # search server by id choose various endpoint 
+    tools = mcpm.list_tools(id="api7/apisix-mcp", config_name="deepnlp_tool")
+
+    # Call Claude to Choose Tools Function Calls 
+    client = anthropic.Anthropic()
+    response = client.messages.create(model="claude-3-7-sonnet-20250219", max_tokens=1024, tools=tools, messages=[])
+```
+
+
