@@ -150,3 +150,14 @@ To view or modify Admin API configurations in APISIX, refer to the [Admin API](h
 ```
 
 
+
+## CI & Email Integration
+
+A CI workflow template has been added at `.github/workflows/email-integration.yml`. It runs a test email using `manage.py send-test-email` and optionally runs migrations when `DATABASE_URL` is provided.
+
+Secrets required (add via repo Settings → Secrets → Actions):
+- `RESEND_API_KEY` (preferred) OR `TRUSTGRID_SMTP_HOST`, `TRUSTGRID_SMTP_PORT`, `TRUSTGRID_SMTP_USER`, `TRUSTGRID_SMTP_PASS`, `TRUSTGRID_FROM`
+- `TEST_ALERT_EMAIL` (address to receive the test alert)
+- `DATABASE_URL` (optional, for Postgres migration)
+
+See session artifact for full instructions: /Users/tub/.copilot/session-state/2cee4e88-7f34-4324-890e-eae6e1e82f1a/files/trustgrid-secrets-and-ci.md

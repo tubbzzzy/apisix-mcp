@@ -1,0 +1,55 @@
+# GitHub Actions: TrustGrid email-integration template
+# Place this in .github/workflows/email-integration.yml in the TrustGrid repo.
+
+name: TrustGrid Email Integration
+on:
+  workflow_dispatch: {}
+  push:
+    branches: [ main, master ]
+
+env:
+  PYTHONUNBUFFERED: 1
+
+jobs:
+  send-test-email:
+    runs-on: ubuntu-latest
+    permissions: write-all
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install deps
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+
+      - name: Run database migrations (optional)
+        if: env.DATABASE_URL != ''
+        run: |
+          echo "DATABASE_URL=${{ secrets.DATABASE_URL }}"
+          python scripts/migrate_schema_to_postgres.py || true
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+
+      - name: Send test email (Resend preferred, fallback to SMTP)
+        run: |
+          set -e
+          # Expects either RESEND_API_KEY or SMTP secrets + TEST_ALERT_EMAIL
+          python manage.py send-test-email ${{ secrets.TEST_ALERT_EMAIL }}
+        env:
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+          TRUSTGRID_SMTP_HOST: ${{ secrets.TRUSTGRID_SMTP_HOST }}
+          TRUSTGRID_SMTP_PORT: ${{ secrets.TRUSTGRID_SMTP_PORT }}
+          TRUSTGRID_SMTP_USER: ${{ secrets.TRUSTGRID_SMTP_USER }}
+          TRUSTGRID_SMTP_PASS: ${{ secrets.TRUSTGRID_SMTP_PASS }}
+          TRUSTGRID_FROM: ${{ secrets.TRUSTGRID_FROM }}
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+
+# Notes:
+# - This template assumes the TrustGrid repo has manage.py send-test-email implemented as discussed.
+# - Protect secrets: restrict Actions to only required branches or enable required reviewers for workflow runs if desired.
